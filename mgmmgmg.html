@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        input {
+            padding: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Token Checker</h1>
+    <p>Введите токен, чтобы проверить его наличие:</p>
+    <input type="text" id="tokenInput" placeholder="Введите токен">
+    <button onclick="checkToken()">Проверить</button>
+    <p id="result"></p>
+
+    <script>
+        async function checkToken() {
+            const token = document.getElementById('tokenInput').value.trim();
+
+            const response = await fetch('http://95.37.212.38:5000/check_token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: token })
+            });
+
+            const data = await response.json();
+            if (data.status === 'valid') {
+                document.getElementById('result').textContent = 'True: Токен найден!';
+            } else {
+                document.getElementById('result').textContent = 'False: Токен не найден.';
+            }
+        }
+    </script>
+</body>
+</html>
