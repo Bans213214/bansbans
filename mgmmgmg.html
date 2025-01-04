@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Token Checker</title>
+    <title>Token Manager</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,17 +17,34 @@
     </style>
 </head>
 <body>
-    <h1>Token Checker</h1>
-    <p>Введите токен, чтобы проверить его наличие:</p>
+    <h1>Token Manager</h1>
+    <p>Введите новый токен:</p>
     <input type="text" id="tokenInput" placeholder="Введите токен">
-    <button onclick="checkToken()">Проверить</button>
-    <p id="result"></p>
+    <button onclick="addToken()">Добавить</button>
+    <h2>Список токенов:</h2>
+    <ul id="tokenList"></ul>
 
     <script>
-        async function checkToken() {
-            const token = document.getElementById('tokenInput').value.trim();
+        async function fetchTokens() {
+            const response = await fetch('https://Bans213214.github.io/bansbans/get_tokens');
+            const tokens = await response.json();
+            const tokenList = document.getElementById('tokenList');
+            tokenList.innerHTML = '';
+            tokens.forEach(token => {
+                const li = document.createElement('li');
+                li.textContent = token;
+                tokenList.appendChild(li);
+            });
+        }
 
-            const response = await fetch('http://95.37.212.38:5000/check_token', {
+        async function addToken() {
+            const token = document.getElementById('tokenInput').value.trim();
+            if (!token) {
+                alert('Введите токен!');
+                return;
+            }
+
+            const response = await fetch('https://Bans213214.github.io/bansbans/add_token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -35,13 +52,15 @@
                 body: JSON.stringify({ token: token })
             });
 
-            const data = await response.json();
-            if (data.status === 'valid') {
-                document.getElementById('result').textContent = 'True: Токен найден!';
+            if (response.ok) {
+                document.getElementById('tokenInput').value = '';
+                fetchTokens();
             } else {
-                document.getElementById('result').textContent = 'False: Токен не найден.';
+                alert('Ошибка при добавлении токена.');
             }
         }
+
+        fetchTokens();
     </script>
 </body>
 </html>
